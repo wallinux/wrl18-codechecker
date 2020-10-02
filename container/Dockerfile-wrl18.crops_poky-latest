@@ -1,0 +1,33 @@
+FROM crops/poky:latest
+MAINTAINER Anders Wallin
+
+WORKDIR /root
+
+USER root
+ENV TERM xterm
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update
+RUN apt-get install -y locales tzdata cpio
+RUN apt-get install -y moreutils bc bsdmainutils rsync lsb-release
+
+###############################################################
+# add clang version 12
+RUN apt-get install -y software-properties-common
+RUN (wget https://apt.llvm.org/llvm.sh; chmod +x llvm.sh)
+RUN ./llvm.sh 12
+
+# Prepare for codechecker
+RUN apt-get install -y clang clang-tidy build-essential curl doxygen \
+    gcc-multilib git python-virtualenv python3-dev
+
+# add newer nodejs version
+RUN (curl -sL https://deb.nodesource.com/setup_12.x | bash -)
+RUN apt-get install -y nodejs
+
+# build codechecker
+RUN git clone https://github.com/Ericsson/CodeChecker.git --depth 1 /opt/codechecker
+RUN make -C /opt/codechecker venv
+RUN (. /opt/codechecker/venv/bin/activate; make -C /opt/codechecker package)
+
+ENTRYPOINT ["/bin/sh"]
