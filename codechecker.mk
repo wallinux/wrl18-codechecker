@@ -26,7 +26,7 @@ define cc-log
 	$(MKDIR) $(ccdir)
 	$(call bitbake-task, busybox, cleanall)
 	$(call bitbake-task, busybox, configure)
-	$(CCPREP) CodeChecker --verbose debug log -o $(ccdir)/codechecker-log.json -b "bitbake $(1)"
+	$(CCPREP) CodeChecker log --verbose debug -o $(ccdir)/codechecker-log.json -b "bitbake $(1)"
 endef
 
 define cc-analyze
