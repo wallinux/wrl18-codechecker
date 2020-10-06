@@ -19,7 +19,7 @@ bison
 bluez5
 bonnie++
 boost
-bridge-utils
+##bridge-utils
 btrfs-tools
 busybox
 bzip2

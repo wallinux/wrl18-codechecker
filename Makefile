@@ -5,7 +5,7 @@ include common.mk
 MACHINE		?= qemux86-64
 DISTRO		?= wrlinux
 KERNEL_TYPE	?= standard
-IMAGE		?= wrlinux-image-small
+IMAGE		?= wrlinux-image-glibc-small
 
 OUT_DIR		?= $(TOP)/out
 BUILD_DIR	?= $(OUT_DIR)/build_$(MACHINE)_$(KERNEL_TYPE)
@@ -20,8 +20,6 @@ WRL_OPTS	+= --distros $(DISTRO)
 WRL_OPTS	+= --base-branch $(WRL_BRANCH)
 WRL_OPTS	+= --machines $(MACHINE)
 
--include $(OUT_DIR)/wrlinux_version
-
 ######################################################################################
 BBPREP		= $(CD) $(OUT_DIR); \
 		  source ./environment-setup-x86_64-wrlinuxsdk-linux; \
@@ -35,6 +33,8 @@ define bitbake-task
 	$(BBPREP) bitbake $(1) -c $(2)
 endef
 
+PKGLIST		?= $(shell grep -v "^\#" pkglist)
+
 ######################################################################################
 
 Makefile.help::
@@ -42,20 +42,24 @@ Makefile.help::
 	$(call run-help, Makefile)
 	$(GREEN)
 	$(ECHO) " WRL_INSTALL_DIR: $(WRL_INSTALL_DIR)"
-	$(ECHO) " WRLINUX_VERSION: $(WRLINUX_VERSION)"
 	$(ECHO) " MACHINE: $(MACHINE)"
 	$(ECHO) " KERNEL_TYPE: $(KERNEL_TYPE)"
 	$(ECHO) " IMAGE: $(IMAGE)"
 
 help:: Makefile.help
 
+all: # Make everything
+	$(TRACE)
+	$(MAKE) codechecker.server.start
+	$(MAKE) docker.start
+	$(MAKE) docker.make.codechecker.disable
+	$(MAKE) docker.make.pkg.ALL V=1
+	$(MAKE) docker.make.codechecker.enable
+	$(MAKE) docker.make.pkg.ALL V=1
+
 list-machines: setup # list-machines
 	$(TRACE)
 	$(CD) $(OUT_DIR); ./wrlinux-x/setup.sh --$@
-
-wrlinux_version:
-	$(TRACE)
-	$(Q)sed '/^WRLINUX_/!d' $(OUT_DIR)/layers/wrlinux/conf/wrlinux-version.inc | grep _VERSION | head -n -1 | tr -d ' ' > $(OUT_DIR)/$@
 
 setup: $(OUT_DIR) # setup wrlinux CD
 $(OUT_DIR):
@@ -64,7 +68,6 @@ $(OUT_DIR):
 	$(CD) $@ ; \
 		git clone --branch $(WRL_BRANCH) $(WRL_INSTALL_DIR)/wrlinux-x wrlinux-x; \
 		REPO_MIRROR_LOCATION=$(WRL_INSTALL_DIR)	./wrlinux-x/setup.sh $(WRL_OPTS);
-	$(MAKE) wrlinux_version
 
 configure:: $(BUILD_DIR)  # configure wrlinux CD machine build directory
 $(BUILD_DIR): | $(OUT_DIR)
@@ -83,9 +86,17 @@ $(BUILD_DIR): | $(OUT_DIR)
 	fi
 	$(ECHO) "SSTATE_DIR = \"$(OUT_DIR)/sstate-cache\"" >> $(BUILD_DIR)/conf/local.conf
 
-kernel: | $(BUILD_DIR) # build kernel
+pkg.%: | $(BUILD_DIR) # build package %
 	$(TRACE)
-	$(Q)$(call bitbake-task, virtual/kernel, configure)
+	$(Q)$(call bitbake, $*)
+
+pkg.ALL: # run codechecker on all packages in $(PKGLIST)
+	$(TRACE)
+	@$(foreach pkg,$(PKGLIST), make pkg.$(pkg) V=$(V);)
+
+pkglist.show: # show the packages in $(PKGLIST)
+	$(TRACE)
+	@$(foreach pkg,$(PKGLIST), echo $(pkg);)
 
 bbs: | $(BUILD_DIR) # start bitbake shell
 	$(CD) $(OUT_DIR) ; \

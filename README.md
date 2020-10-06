@@ -1,7 +1,5 @@
 # wrl18-codechecker build
 
-!! STATUS not working!!
-
 Build wrlinux18 with the static code analyser CodeChecker.
 The results are stored on a CodeChecker webserver running at localhost:8003
 
@@ -35,9 +33,7 @@ WRL_INSTALL_DIR	= /opt/projects/ericsson/installs/wrlinux_lts18
 `make configure`
 
 6. build one package with codechecker e.g. package byusybox
-`make codechecker.build CODECHECKER_PKG=busybox`
-
-NOTE; this will build ALL packages required by the package. The result is useless and need to fixed!
+`make pkg.ALL`
 
 7. Check codechecker result in the webserver, http://localhost:8003
 
@@ -48,4 +44,5 @@ NOTE; this will build ALL packages required by the package. The result is useles
 ## References:
 - https://github.com/Ericsson/codechecker
 - https://github.com/Ericsson/codechecker/blob/master/docs/web/docker.md
+- https://github.com/dl9pf/meta-codechecker
 - https://codechecker.readthedocs.io/en/latest/analyzer/user_guide/#bitbake
