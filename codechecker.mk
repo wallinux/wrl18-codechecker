@@ -36,8 +36,8 @@ codechecker.deconfigure: # remove codechecker configuration
 	$(TRACE)
 	$(eval localconf=$(BUILD_DIR)/conf/local.conf)
 	$(eval ccconf=$(BUILD_DIR)/conf/codechecker.conf)
-	$(RM) $(ccconf)
-	$(SED) '/codechecker/d' $(localconf)
+	-$(RM) $(ccconf)
+	-$(SED) '/codechecker.conf/d' $(localconf)
 
 codechecker.add_layer: $(BUILD_DIR) $(CODECHECKER_DIR) # add codechecker layer
 	$(TRACE)

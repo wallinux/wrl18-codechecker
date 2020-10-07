@@ -37,10 +37,6 @@ WRL_INSTALL_DIR	= /opt/projects/ericsson/installs/wrlinux_lts18
 
 7. Check codechecker result in the webserver, http://localhost:8003
 
-
-### Podman build
-- Not tested/working
-
 ## References:
 - https://github.com/Ericsson/codechecker
 - https://github.com/Ericsson/codechecker/blob/master/docs/web/docker.md
