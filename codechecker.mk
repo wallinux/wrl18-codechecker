@@ -27,7 +27,7 @@ codechecker.configure: $(BUILD_DIR) $(CODECHECKER_DIR) # create codechecker conf
 	$(ECHO) "# codechecker.conf" > $(ccconf)
 	$(ECHO) "INHERIT += \"codechecker\"" >> $(ccconf)
 	$(ECHO) "CODECHECKER_ENABLED = \"1\"" >> $(ccconf)
-	$(ECHO) "CODECHECKER_ANALYZE_ARGS = \"--ctu -e sensitive\"" >> $(ccconf)
+#	$(ECHO) "CODECHECKER_ANALYZE_ARGS = \"--ctu -e sensitive\"" >> $(ccconf)
 #	$(ECHO) "CODECHECKER_REPORT_HTML = \"1\""  >> $(ccconf)
 	$(ECHO) "CODECHECKER_REPORT_STORE = \"1\""  >> $(ccconf)
 	$(ECHO) "CODECHECKER_REPORT_HOST = \"http://$(CODECHECKER_IP):$(CODECHECKER_PORT)/Default\"" >> $(ccconf)
