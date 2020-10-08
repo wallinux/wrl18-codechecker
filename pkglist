@@ -46,6 +46,7 @@ libusb1
 libxml2
 libyaml
 libyang
+linux-yocto
 lksctp-tools
 logrotate
 lttng-tools
