@@ -1,11 +1,13 @@
 # codechecker.mk
 
 CODECHECKER_REPO	= git@github.com:wallinux/meta-codechecker.git
-CODECHECKER_DIR	= $(TOP)/layers/meta-codechecker
+CODECHECKER_DIR		= $(TOP)/layers/meta-codechecker
 CODECHECKER_BRANCH	?= thud2
 
 CODECHECKER_PORT	?= 8003
 CODECHECKER_IP		?= localhost
+
+CODECHECKER_PATH	?= /opt/codechecker
 
 #######################################################################
 
@@ -71,6 +73,10 @@ codechecker.distclean: # delete codechecker dir
 	$(MAKE) codechecker.remove_layer
 	$(RM) -r $(CODECHECKER_DIR)
 	$(call rmstamp,codechecker.configure)
+
+codechecker.shell: # enable codechecker in shell
+	$(TRACE)
+	$(Q)source $(CODECHECKER_PATH)/venv/bin/activate; export PATH=$(CODECHECKER_PATH)/build/CodeChecker/bin:$$PATH; bash
 
 codechecker.help:
 	$(call run-help, codechecker.mk)
