@@ -6,8 +6,8 @@ WRL_INSTALL_DIR	= /opt/projects/ericsson/installs/wrlinux_lts18
 # Define to trace cmd's
 # V=1
 
-BB_NUMBER_THREADS       = 4
-PARALLEL_MAKE 	  	= -j 2
+BB_NUMBER_THREADS       = 2
+PARALLEL_MAKE 	  	= -j 4
 OUT_DIR			= /opt/awallin/$(shell basename $(PWD))
 CONTAINER_MOUNTS	+= -v $(OUT_DIR):$(OUT_DIR)
 
