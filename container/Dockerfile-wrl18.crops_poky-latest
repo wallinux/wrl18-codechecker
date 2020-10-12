@@ -25,8 +25,17 @@ RUN apt-get install -y clang clang-tidy build-essential curl doxygen \
 RUN (curl -sL https://deb.nodesource.com/setup_12.x | bash -)
 RUN apt-get install -y nodejs
 
+# download codechecker
+RUN git clone https://github.com/Ericsson/CodeChecker.git /opt/codechecker
+RUN git -C /opt/codechecker/ config user.email "whoiam@example.com"
+RUN git -C /opt/codechecker/ config user.name "Who IAm"
+RUN git -C /opt/codechecker/ checkout -b b6.14.0 v6.14.0
+
+# patch codechecker
+ADD 0001-added-RCS-gcc-options-to-IGNORED_OPTIONS_GCC.patch /opt/codechecker/0001-added-RCS-gcc-options-to-IGNORED_OPTIONS_GCC.patch
+RUN git -C /opt/codechecker/ am /opt/codechecker/0001-added-RCS-gcc-options-to-IGNORED_OPTIONS_GCC.patch
+
 # build codechecker
-RUN git clone https://github.com/Ericsson/CodeChecker.git --depth 1 /opt/codechecker
 RUN make -C /opt/codechecker venv
 RUN (. /opt/codechecker/venv/bin/activate; make -C /opt/codechecker package)
 
