@@ -8,6 +8,7 @@ CODECHECKER_PORT	?= 8003
 CODECHECKER_IP		?= localhost
 
 CODECHECKER_PATH	?= /opt/codechecker
+CODECHECKER_SKIPFILE	?= $(TOP)/codechecker.skipfile
 
 #######################################################################
 
@@ -27,7 +28,8 @@ codechecker.configure: $(BUILD_DIR) $(CODECHECKER_DIR) # create codechecker conf
 	$(ECHO) "# codechecker.conf" > $(ccconf)
 	$(ECHO) "INHERIT += \"codechecker\"" >> $(ccconf)
 	$(ECHO) "CODECHECKER_ENABLED = \"1\"" >> $(ccconf)
-#	$(ECHO) "CODECHECKER_ANALYZE_ARGS = \"--ctu -e sensitive\"" >> $(ccconf)
+	$(ECHO) "CODECHECKER_ANALYZE_ARGS = \"--skip $(CODECHECKER_SKIPFILE)--keep-gcc-include-fixed\"" >> $(ccconf)
+#	$(ECHO) "CODECHECKER_ANALYZE_ARGS = \"--keep-gcc-include-fixed --ctu -e sensitive\"" >> $(ccconf)
 #	$(ECHO) "CODECHECKER_REPORT_HTML = \"1\""  >> $(ccconf)
 	$(ECHO) "CODECHECKER_REPORT_STORE = \"1\""  >> $(ccconf)
 	$(ECHO) "CODECHECKER_REPORT_HOST = \"http://$(CODECHECKER_IP):$(CODECHECKER_PORT)/Default\"" >> $(ccconf)
