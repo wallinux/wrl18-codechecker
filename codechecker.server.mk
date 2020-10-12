@@ -44,6 +44,9 @@ codechecker.server.logs: # show codechecker container log
 
 codechecker.server.help:
 	$(call run-help, codechecker.server.mk)
+	$(GREEN)
+	$(ECHO) " SERVER: http://$(CODECHECKER_IP):$(CODECHECKER_PORT)/Default"
+	$(NORMAL)
 
 codechecker.server.distclean: codechecker.server.rm codechecker.server.rmi
 	$(TRACE)
