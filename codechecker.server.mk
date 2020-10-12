@@ -7,10 +7,23 @@ CODECHECKER_CONTAINER	?= wrl18_codechecker
 
 CODECHECKER_ID		= $(eval codechecker_id=$(shell $(CONTAINER) ps -a -q -f name=$(CODECHECKER_CONTAINER)))
 
+define run-cc-exec
+	$(MCONTAINER) exec $(1) $(CODECHECKER_CONTAINER) $(2)
+endef
+
 #######################################################################
 
 $(CODECHECKER_WORKSPACE):
 	$(MKDIR) $@
+
+codechecker.server.prepare:
+	$(TRACE)
+	$(MCONTAINER) start $(CODECHECKER_CONTAINER)
+	$(eval host_timezone=$(shell cat /etc/timezone))
+	$(call run-cc-exec, , sh -c "echo $(host_timezone) > /etc/timezone" )
+	$(call run-cc-exec, , ln -sfn /usr/share/zoneinfo/$(host_timezone) /etc/localtime )
+	$(call run-cc-exec, , dpkg-reconfigure -f noninteractive tzdata 2> /dev/null)
+	$(MAKE) codechecker.server.stop
 
 codechecker.server.create: | $(CODECHECKER_WORKSPACE) # create codechecker container
 	$(TRACE)
@@ -20,6 +33,7 @@ codechecker.server.create: | $(CODECHECKER_WORKSPACE) # create codechecker conta
 		-v $(CODECHECKER_WORKSPACE):/workspace \
 		-p $(CODECHECKER_PORT):8001 \
 		-i $(CODECHECKER_IMAGE); \
+		make codechecker.server.prepare; \
 	fi
 
 codechecker.server.start: codechecker.server.create # start codechecker container
@@ -41,6 +55,10 @@ codechecker.server.rmi: # remove codechecker image
 codechecker.server.logs: # show codechecker container log
 	$(TRACE)
 	$(MCONTAINER) logs $(CODECHECKER_CONTAINER)
+
+codechecker.server.shell: # start shell in container
+	$(TRACE)
+	$(call run-cc-exec, -it, /bin/sh -c "/bin/bash")
 
 codechecker.server.help:
 	$(call run-help, codechecker.server.mk)
