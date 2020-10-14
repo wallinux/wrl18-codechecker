@@ -10,7 +10,8 @@ IMAGE		?= wrlinux-image-glibc-small
 OUT_DIR		?= $(TOP)/out
 BUILD_DIR	?= $(OUT_DIR)/build_$(MACHINE)_$(KERNEL_TYPE)
 
-WRL_INSTALL_DIR ?= /wr/installs/wrl-18-mirror
+WRL_VER		?= 18
+WRL_INSTALL_DIR ?= /wr/installs/wrl-$(WRL_VER)-mirror
 RCPL		?= 0018
 WRL_BRANCH	?= WRLINUX_10_18_LTS_RCPL$(RCPL)
 
